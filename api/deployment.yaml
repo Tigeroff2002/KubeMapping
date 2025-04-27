@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logistic-api
+  namespace: logistic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logistic-api
+  template:
+    metadata:
+      labels:
+        app: logistic-api
+    spec:
+      containers:
+      - name: logistic-api
+        image: tigeroff/logistic-api:latest
+        env:
+        - name: ASPNETCORE_URLS
+          value: "http://+:80;https://+:443"
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+          value: "/app/certs/tls.crt"
+        - name: ASPNETCORE_Kestrel__Certificates__Default__KeyPath
+          value: "/app/certs/tls.key"
+        - name: Logging__LogLevel__Default
+          value: "Debug" 
+        - name: ConnectionStrings__DefaultConnection
+          value: "Host=postgres;Database=logistic_db;Username=postgres;Password=root"
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        volumeMounts:
+        - name: certs-volume
+          mountPath: "/app/certs"
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /hc
+            port: 443
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: certs-volume
+        secret:
+          secretName: tls-secret

@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: logistic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      securityContext:
+        fsGroup: 999
+      initContainers:
+      - name: init-db
+        image: postgres:17
+        command: ["sh", "-c", "mkdir -p /var/lib/postgresql/data/pgdata && chown -R 999:999 /var/lib/postgresql/data"]
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+      containers:
+      - name: postgres
+        image: postgres:17
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 999
+        env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secrets
+              key: password
+        - name: POSTGRES_DB
+          value: logistic_db
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: migrations
+          mountPath: /docker-entrypoint-initdb.d/
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: migrations
+        configMap:
+          name: postgres-migrations
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: postgres-pvc

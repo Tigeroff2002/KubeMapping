@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: logistic-ingress
+  namespace: logistic
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  tls:
+  - hosts:
+    - logistic-api
+    secretName: logistic-api-tls
+  ingressClassName: nginx
+  rules:
+  - host: logistic-api
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: logistic-api
+            port:
+              number: 443

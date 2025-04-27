@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logistic-client
+  namespace: logistic 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logistic-client
+  template:
+    metadata:
+      labels:
+        app: logistic-client
+    spec:
+      containers:
+      - name: logistic-client
+        image: tigeroff/logistic-client:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        - containerPort: 443
