@@ -4,6 +4,7 @@ BEGIN;
 
 CREATE TYPE role AS ENUM ('user', 'admin');
 CREATE TYPE request_status AS ENUM ('created', 'accepted', 'followed', 'unfollowed', 'closed');
+CREATE TYPE request_type AS ENUM ('simple', 'travelling_salesman');
 CREATE TYPE segment_type AS ENUM ('initial', 'active');
 
 CREATE TABLE users (
@@ -18,6 +19,7 @@ CREATE TABLE requests (
     guid text NOT NULL,
     user_id bigint NOT NULL,
     status request_status NOT NULL,
+    request_type request_type NOT NULL DEFAULT 'simple',
     start_width double precision NOT NULL,
     start_height double precision NOT NULL,
     end_width double precision NOT NULL,
