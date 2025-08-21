@@ -4,6 +4,7 @@ metadata:
   name: nginx-config
   namespace: logistic
 data:
+  allow-snippet-annotations: "true"
   nginx.conf: |
     user  nginx;
     worker_processes  auto;
