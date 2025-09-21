@@ -46,6 +46,12 @@ kubectl apply -f builder/service.yaml
 
 kubectl apply -f ingress-service-builder.yaml
 
+// включение logistic-payment
+kubectl apply -f payment/deployment.yaml
+kubectl apply -f payment/service.yaml 
+
+kubectl apply -f ingress-service-payment.yaml
+
 // включение logistic-client
 kubectl apply -f web/deployment.yaml
 kubectl apply -f web/service.yaml 
@@ -85,3 +91,4 @@ kubectl rollout restart deployment -n logistic logistic-builder
 curl.exe -k https://logistic-api:443/hc
 curl.exe -k https://logistic-builder:443/hc
 curl.exe -k https://logistic-web:43/
+kubectl port-forward deployment/postgres 5433:5432 -n logistic

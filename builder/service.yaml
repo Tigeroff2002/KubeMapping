@@ -7,7 +7,7 @@ spec:
   selector:
     app: logistic-builder
   ports:
-    - name: https
+    - name: http
       protocol: TCP
-      port: 443
-      targetPort: 443
+      port: 80
+      targetPort: 8090 

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: logistic-builder
-        image: tigeroff/logistic-builder:latest
+        image: tigeroff/logistic-builder:1.0
         env:
         - name: ASPNETCORE_URLS
           value: "http://+:80;https://+:443"
@@ -29,6 +29,8 @@ spec:
           value: "Information" 
         - name: ConnectionStrings__DefaultConnection
           value: "Host=postgres;Database=logistic_db;Username=postgres;Password=root"
+        - name: RestEndpointConfiguration__RestEndpoint
+          value: "http://logistic-api/notifications/request/calculated"
         ports:
         - containerPort: 80
           name: http

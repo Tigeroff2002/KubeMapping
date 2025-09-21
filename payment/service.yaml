@@ -1,17 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: logistic-api
+  name: logistic-payment
   namespace: logistic
 spec:
   selector:
-    app: logistic-api
+    app: logistic-payment
   ports:
-    - name: https
-      protocol: TCP
-      port: 443
-      targetPort: 443
     - name: http
       protocol: TCP
       port: 80
-      targetPort: 80
+      targetPort: 8070 

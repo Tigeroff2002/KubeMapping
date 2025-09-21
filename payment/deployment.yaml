@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logistic-payment
+  namespace: logistic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logistic-payment
+  template:
+    metadata:
+      labels:
+        app: logistic-payment
+    spec:
+      containers:
+      - name: logistic-payment
+        image: tigeroff/logistic-payment-service:1.5
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "production"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:postgresql://postgres:5432/logistic_db"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "postgres"
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secrets
+              key: password
+        - name: YOOKASSA_API_URL
+          value: "https://api.yookassa.ru/v3/"
+        - name: API_GATEWAY_URL
+          value: "http://logistic-api"
+        - name: JAVA_OPTS
+          value: "-Xmx512m -Xms256m"
+        - name: SERVER_PORT
+          value: "8070"
+
+        - name: LOGGING_LEVEL_ROOT
+          value: "WARN"  # Уменьшаем общий уровень логирования
+        - name: LOGGING_LEVEL_TIGEROFF_LOGISTIC_PAYMENT
+          value: "DEBUG"  # Ваш пакет с нормальным логированием
+        - name: LOGGING_LEVEL_ORG_HIBERNATE
+          value: "WARN"  # Убираем логи Hibernate
+        - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK
+          value: "WARN"  # Убираем логи Spring
+        - name: LOGGING_LEVEL_ORG_APACHE
+          value: "WARN"  # Убираем логи Apache
+
+        ports:
+        - containerPort: 8070
+          name: http
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8070
+          initialDelaySeconds: 90
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8070
+          initialDelaySeconds: 30
+          periodSeconds: 15
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
