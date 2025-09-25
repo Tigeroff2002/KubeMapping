@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: logistic-api
-        image: tigeroff/logistic-api:1.0
+        image: tigeroff/logistic-api:1.1
         env:
         - name: ASPNETCORE_URLS
           value: "http://+:80;https://+:443"
