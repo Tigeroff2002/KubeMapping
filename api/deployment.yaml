@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: logistic-api
-        image: tigeroff/logistic-api:1.1
+        image: tigeroff/logistic-api:1.3
         env:
         - name: ASPNETCORE_URLS
           value: "http://+:80;https://+:443"
@@ -29,6 +29,16 @@ spec:
           value: "Debug" 
         - name: ConnectionStrings__DefaultConnection
           value: "Host=postgres;Database=logistic_db;Username=postgres;Password=root"
+        - name: CamundaConfiguration__BaseUrl
+          value: "http://camunda-bpmn-orchestrator/engine-rest/"
+        - name: CamundaConfiguration__ProcessSuffix
+          value: "process-definition/key/services-health-check-process/start"
+        - name: CamundaConfiguration__LogisticBuilderUrl
+          value: "http://logistic-builder/hc"
+        - name: CamundaConfiguration__LogisticPaymentUrl
+          value: "http://logistic-payment/actuator/health"
+        - name: CamundaConfiguration__DelayBetweenChecks
+          value: "00:00:30"
         ports:
         - containerPort: 80
           name: http

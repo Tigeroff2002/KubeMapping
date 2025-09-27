@@ -34,6 +34,10 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt
 
 kubectl create secret tls tls-secret --cert=./tls.crt --key=./tls.key -n logistic
 
+kubectl apply -f camunda/pvc.yaml 
+kubectl apply -f camunda/deployment.yaml 
+kubectl apply -f camunda/service.yaml 
+
 // включение logistic-api
 kubectl apply -f api/deployment.yaml
 kubectl apply -f api/service.yaml 
@@ -93,3 +97,5 @@ curl.exe -k https://logistic-api:443/hc
 curl.exe -k https://logistic-builder:443/hc
 curl.exe -k https://logistic-web:43/
 kubectl port-forward deployment/postgres 5433:5432 -n logistic
+
+Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjkxNGZiOWIwODcxODBiYzAzMDMyODQ1MDBjNWY1NDBjNmQ0ZjVlMmYiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIxMTg3MzMxMzEyMDUtdWo0dWxybmo3Yjlxam1zN244YmE5NzFuajJxbjVoYWIuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIxMTg3MzMxMzEyMDUtdWo0dWxybmo3Yjlxam1zN244YmE5NzFuajJxbjVoYWIuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDQ0NDU1ODQ2NTgwMjEzNzU0MTgiLCJlbWFpbCI6InBhcmFoaW5rdkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmJmIjoxNzQxNTUwNjUxLCJuYW1lIjoiVGlnZXJvZmYgSEQiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUNnOG9jSktPOFRGWEx4VzJPcWVtYzZ0QS0xNjZ3MjFfdWRaZUtqREZsdmtrLUZHNFc3QTZLdz1zOTYtYyIsImdpdmVuX25hbWUiOiJUaWdlcm9mZiIsImZhbWlseV9uYW1lIjoiSEQiLCJpYXQiOjE3NDE1NTA5NTEsImV4cCI6MTg0MTU1NDU1MSwianRpIjoiMjFmNTAwYmY1MDhjZDgyMTQ0OTgzZDUzMjRlZmViZGYxZjg2MTNhMSJ9.xiz3-B8IexnnM1OyF5Ahjazk8039ZN7eMMDmiSeCfAhEcH-RL47r4WTDyCu3r2bnfx2iVaI2BSUcSXbFKTk955tltFNdr0r5OJ6b7bLHFgZ67kesG6DFqDREbRdODf3A59ju8CSmPOQ0MDp_n9K66QwL4GQ-ah2kja8MQILn4eJy3qDjfoDav2QCBVch77MUwSctb1KtHjZRe66UxjBDkIhdWuUruQD_RwlxRe9VXVYQhOIK7gNyDno4pr_qRSbnFJaaBKFqlqW5HAIZQ07-wGp3JNCynpkSRXcKm3ShXj3cdhlRm8ULQitpr7E_y7BtDS-lL5zCNugemaICVmSprw

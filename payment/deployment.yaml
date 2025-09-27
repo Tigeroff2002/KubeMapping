@@ -38,15 +38,15 @@ spec:
           value: "8070"
 
         - name: LOGGING_LEVEL_ROOT
-          value: "WARN"  # Уменьшаем общий уровень логирования
+          value: "WARN"
         - name: LOGGING_LEVEL_TIGEROFF_LOGISTIC_PAYMENT
-          value: "DEBUG"  # Ваш пакет с нормальным логированием
+          value: "DEBUG" 
         - name: LOGGING_LEVEL_ORG_HIBERNATE
-          value: "WARN"  # Убираем логи Hibernate
+          value: "WARN"
         - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK
-          value: "WARN"  # Убираем логи Spring
+          value: "WARN"
         - name: LOGGING_LEVEL_ORG_APACHE
-          value: "WARN"  # Убираем логи Apache
+          value: "WARN
 
         ports:
         - containerPort: 8070

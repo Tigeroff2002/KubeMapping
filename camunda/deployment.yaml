@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: camunda-bpmn-orchestrator
+  namespace: logistic
+  labels:
+    app: camunda-bpmn-orchestrator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: camunda-bpmn-orchestrator
+  template:
+    metadata:
+      labels:
+        app: camunda-bpmn-orchestrator
+    spec:
+      containers:
+      - name: camunda
+        image: camunda/camunda-bpm-platform:latest
+        ports:
+        - containerPort: 8100
+          name: http
+        env:
+        - name: SERVER_PORT
+          value: "8100"
+        - name: JAVA_OPTS
+          value: "-Dserver.port=8100 -Dcamunda.bpm.engine.jobexecutor.port=8100"
+        - name: CAMUNDA_BPM_DATASOURCE_DRIVER
+          value: "org.h2.Driver"
+        - name: CAMUNDA_BPM_DATASOURCE_URL
+          value: "jdbc:h2:./camunda-h2-database"
+        - name: CAMUNDA_BPM_DATASOURCE_USERNAME
+          value: "sa"
+        - name: CAMUNDA_BPM_DATASOURCE_PASSWORD
+          value: ""
+        - name: CAMUNDA_BPM_ADMIN_USER_ID
+          value: "demo"
+        - name: CAMUNDA_BPM_ADMIN_USER_PASSWORD
+          value: "demo"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1024Mi"
+            cpu: "500m"
+
+        volumeMounts:
+        - name: camunda-data
+          mountPath: /camunda/data
+      volumes:
+      - name: camunda-data
+        persistentVolumeClaim:
+          claimName: camunda-pvc
