@@ -46,7 +46,7 @@ spec:
         - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK
           value: "WARN"
         - name: LOGGING_LEVEL_ORG_APACHE
-          value: "WARN
+          value: "WARN"
 
         ports:
         - containerPort: 8070

@@ -13,9 +13,15 @@ kubectl apply -f postgres/service.yaml
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.2/cert-manager.yaml
 kubectl apply -f cluster-issuer.yaml
 
+scoop install openssl
+
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=logistic-api/O=logistic-api"
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=logistic-client/O=logistic-client"
 kubectl create secret tls tls-secret --cert=./tls.crt --key=./tls.key -n logistic
+
+kubectl apply -f camunda/pvc.yaml 
+kubectl apply -f camunda/deployment.yaml 
+kubectl apply -f camunda/service.yaml 
 
 kubectl apply -f api/deployment.yaml
 kubectl apply -f api/service.yaml 
