@@ -1,0 +1,25 @@
+# configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kube-config
+  namespace: logistic
+data:
+  config: |
+    apiVersion: v1
+    kind: Config
+    clusters:
+    - cluster:
+        server: https://kubernetes.default.svc
+        certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      name: default
+    contexts:
+    - context:
+        cluster: default
+        user: jenkins
+      name: default
+    current-context: default
+    users:
+    - name: jenkins
+      user:
+        tokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
