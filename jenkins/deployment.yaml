@@ -1,0 +1,61 @@
+# corrected-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: logistic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      serviceAccountName: jenkins
+      containers:
+      - name: jenkins
+        image: jenkins/jenkins:lts-jdk17
+        ports:
+        - containerPort: 8080
+        - containerPort: 50000
+        env:
+        - name: JAVA_OPTS
+          value: "-Djenkins.install.runSetupWizard=false"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        volumeMounts:
+        - name: jenkins-data
+          mountPath: /var/jenkins_home
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+        - name: docker-credentials
+          mountPath: /var/run/secrets/docker-hub
+          readOnly: true
+        - name: github-credentials
+          mountPath: /var/run/secrets/github
+          readOnly: true
+      volumes:
+      - name: jenkins-data
+        persistentVolumeClaim:
+          claimName: jenkins-pvc
+      - name: kube-config
+        configMap:
+          name: kube-config
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+          type: Socket
+      - name: docker-credentials
+        secret:
+          secretName: docker-hub-credentials
+      - name: github-credentials
+        secret:
+          secretName: github-credentials
