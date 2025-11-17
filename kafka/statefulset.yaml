@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+  namespace: logistic
+spec:
+  serviceName: kafka-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      initContainers:
+      - name: create-topics
+        image: confluentinc/cp-kafka:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          # Ждем пока Kafka станет доступна
+          until kafka-topics --bootstrap-server kafka-0.kafka-headless.logistic.svc.cluster.local:9092 --list; do
+            echo "Waiting for Kafka to be ready..."
+            sleep 5
+          done
+          
+          # Создаем топики
+          kafka-topics --bootstrap-server kafka-0.kafka-headless.logistic.svc.cluster.local:9092 \
+            --create --if-not-exists --topic request-commands \
+            --partitions 1 --replication-factor 1
+          
+          kafka-topics --bootstrap-server kafka-0.kafka-headless.logistic.svc.cluster.local:9092 \
+            --create --if-not-exists --topic request-commands-v2 \
+            --partitions 1 --replication-factor 1
+          
+          kafka-topics --bootstrap-server kafka-0.kafka-headless.logistic.svc.cluster.local:9092 \
+            --create --if-not-exists --topic payment-commands \
+            --partitions 1 --replication-factor 1
+          
+          echo "Topics created successfully"
+        env:
+        - name: KAFKA_HEAP_OPTS
+          value: "-Xmx256M -Xms256M"
+      containers:
+      - name: kafka
+        image: confluentinc/cp-kafka:latest
+        ports:
+        - containerPort: 9092
+          name: plaintext
+        - containerPort: 9093
+          name: controller
+        env:
+        - name: KAFKA_NODE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['kafka-node-id']
+        - name: KAFKA_PROCESS_ROLES
+          value: "broker,controller"
+        - name: KAFKA_LISTENERS
+          value: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: "PLAINTEXT://$(POD_NAME).kafka-headless.kafka.svc.cluster.local:9092"
+        - name: KAFKA_CONTROLLER_LISTENER_NAMES
+          value: "CONTROLLER"
+        - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+          value: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+        - name: KAFKA_CONTROLLER_QUORUM_VOTERS
+          value: "1@kafka-0.kafka-headless.kafka.svc.cluster.local:9093"
+        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+          value: "1"
+        - name: CLUSTER_ID
+          value: "4L6g3nShT-eMCtK--X86sw"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KAFKA_HEAP_OPTS
+          value: "-Xmx512M -Xms512M"
+        volumeMounts:
+        - name: kafka-data
+          mountPath: /var/lib/kafka/data
+        - name: kafka-config
+          mountPath: /etc/kafka
+        readinessProbe:
+          tcpSocket:
+            port: 9092
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 9092
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: kafka-config
+        configMap:
+          name: kafka-config
+  volumeClaimTemplates:
+  - metadata:
+      name: kafka-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi

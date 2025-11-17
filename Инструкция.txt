@@ -25,6 +25,11 @@ kubectl apply -f postgres/pvc.yaml
 kubectl apply -f postgres/deployment.yaml
 kubectl apply -f postgres/service.yaml
 
+// настройка kafka
+kubectl apply -f kafka/configmap.yaml
+kubectl apply -f kafka/service.yaml
+kubectl apply -f kafka/statefulset.yaml
+
 // настройка сертификатов для https (не особо работает)
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.2/cert-manager.yaml
 kubectl apply -f cluster-issuer.yaml
