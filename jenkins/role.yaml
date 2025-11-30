@@ -4,9 +4,12 @@ metadata:
   namespace: logistic
   name: jenkins
 rules:
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch", "update", "patch", "create", "delete"]
 - apiGroups: [""]
   resources: ["pods", "pods/log"]
   verbs: ["create", "get", "list", "watch", "delete"]
 - apiGroups: [""]
   resources: ["pods/exec"]
-  verbs: ["create", "get"]
+  verbs: ["create"]

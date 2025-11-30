@@ -2,37 +2,43 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_IMAGE = 'tigeroff/logistic-api'
         K8S_NAMESPACE = 'logistic'
         K8S_DEPLOYMENT = 'logistic-api'
     }
+
+    triggers {
+        githubPush()
+
+        pollSCM('H/2 * * * *')
+    }
     
     stages {
+        stage('Clean Workspace') {
+            steps {
+                deleteDir() 
+            }
+        }
+
         stage('Checkout') {
             steps {
                 script {
-                    // Читаем GitHub credentials из mounted secrets
                     def githubUser = readFile('/var/run/secrets/github/username').trim()
                     def githubToken = readFile('/var/run/secrets/github/password').trim()
                     
                     sh """
-                        git clone https://${githubUser}:${githubToken}@github.com/your-username/your-private-repo.git .
+                        git clone https://${githubUser}:${githubToken}@github.com/Tigeroff2002/LogisticAPI.git .
+                        echo "✅ Repository cloned"
                     """
                 }
             }
         }
         
-        stage('Docker Build and Push') {
+        stage('Build Only') {
             steps {
                 script {
-                    // Читаем Docker Hub credentials из mounted secrets
-                    def dockerUser = readFile('/var/run/secrets/docker-hub/username').trim()
-                    def dockerPass = readFile('/var/run/secrets/docker-hub/password').trim()
-                    
                     sh """
-                        echo '${dockerPass}' | docker login -u '${dockerUser}' --password-stdin
-                        docker build -t ${DOCKER_IMAGE}:latest .
-                        docker push ${DOCKER_IMAGE}:latest
+                        docker build -t logistic-api:latest .
+                        echo "✅ Image built locally"
                     """
                 }
             }
@@ -40,10 +46,15 @@ pipeline {
         
         stage('Deploy') {
             steps {
-                sh """
-                    kubectl rollout restart deployment/${K8S_DEPLOYMENT} -n ${K8S_NAMESPACE}
-                    kubectl rollout status deployment/${K8S_DEPLOYMENT} -n ${K8S_NAMESPACE}
-                """
+                script {
+                    sh """
+                        # Используем kubectl annotate вместо сложного patch
+                        kubectl annotate deployment ${K8S_DEPLOYMENT} -n ${K8S_NAMESPACE} deployed-at="\$(date +%s)" --overwrite
+                        kubectl rollout restart deployment/${K8S_DEPLOYMENT} -n ${K8S_NAMESPACE}
+                        kubectl rollout status deployment/${K8S_DEPLOYMENT} -n ${K8S_NAMESPACE}
+                        echo "✅ Deployment completed successfully"
+                    """
+                }
             }
         }
     }
