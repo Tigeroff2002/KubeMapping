@@ -31,6 +31,8 @@ spec:
           value: "Host=postgres;Database=logistic_db;Username=postgres;Password=root"
         - name: RestEndpointConfiguration__RestEndpoint
           value: "http://logistic-api/notifications/request/calculated"
+        - name: KafkaConfiguration_Host
+          value: "kafka:9092"
         ports:
         - containerPort: 80
           name: http

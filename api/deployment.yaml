@@ -39,6 +39,8 @@ spec:
           value: "http://logistic-payment/actuator/health"
         - name: CamundaConfiguration__DelayBetweenChecks
           value: "00:00:30"
+        - name: KafkaConfiguration_Host
+          value: "kafka:9092"
         ports:
         - containerPort: 80
           name: http

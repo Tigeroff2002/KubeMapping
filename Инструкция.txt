@@ -11,6 +11,8 @@ kubectl cluster-info
 kubectl get nodes
 
 scoop install helm
+scoop install minikube
+minikube start --driver=docker
 
 // настройка namespace
 kubectl apply -f namespace.yaml
