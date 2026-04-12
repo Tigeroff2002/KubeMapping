@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: logistic-payment
-        image: tigeroff/logistic-payment-service:1.5
+        image: tigeroff/logistic-payment-service:1.6
         env:
         - name: SPRING_PROFILES_ACTIVE
           value: "production"

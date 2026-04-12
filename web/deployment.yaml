@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: logistic-client
-        image: tigeroff/logistic-client:latest
+        image: tigeroff/logistic-client:2.1
         imagePullPolicy: Always
         ports:
         - containerPort: 80

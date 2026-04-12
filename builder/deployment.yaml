@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: logistic-builder
-        image: tigeroff/logistic-builder:1.1
+        image: tigeroff/logistic-builder:2.0.0
         env:
         - name: ASPNETCORE_URLS
           value: "http://+:80;https://+:443"
@@ -29,9 +29,15 @@ spec:
           value: "Information" 
         - name: ConnectionStrings__DefaultConnection
           value: "Host=postgres;Database=logistic_db;Username=postgres;Password=root"
-        - name: RestEndpointConfiguration__RestEndpoint
+        - name: RestEndpointConfiguration__RequestPushEndpoint
           value: "http://logistic-api/notifications/request/calculated"
-        - name: KafkaConfiguration_Host
+        - name: RestEndpointConfiguration__RequestPartPushEndpoint
+          value: "http://logistic-api/notifications/request/part/calculated"
+        - name: RestEndpointConfiguration__CommandsEndpoint
+          value: "http://logistic-api/notifications/command/processed"
+        - name: RestEndpointConfiguration__PredictionEndpoint
+          value: "http://logistic-trainer"
+        - name: KafkaConfiguration__Host
           value: "kafka:9092"
         ports:
         - containerPort: 80

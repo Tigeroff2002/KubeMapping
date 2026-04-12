@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+  namespace: logistic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kafka
+        image: wurstmeister/kafka:2.13-2.8.1
+        ports:
+        - containerPort: 9092
+          name: kafka
+        env:
+        # Основные настройки Kafka
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: "zookeeper:2181"
+        - name: KAFKA_ADVERTISED_HOST_NAME
+          value: "kafka"
+        - name: KAFKA_ADVERTISED_PORT
+          value: "9092"
+        - name: KAFKA_BROKER_ID
+          value: "1"
+        - name: KAFKA_CREATE_TOPICS
+          value: "requests-commands:1:1,requests-commands-v2:1:1,payments-commands:1:1"
+        - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+          value: "true"
+        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+          value: "1"
+        # Игнорируем автоматические переменные
+        - name: KAFKA_PORT
+          value: ""
+        - name: KAFKA_PORT_9092_TCP
+          value: ""
+        - name: KAFKA_PORT_9092_TCP_ADDR
+          value: ""
+        - name: KAFKA_PORT_9092_TCP_PORT
+          value: ""
+        - name: KAFKA_PORT_9092_TCP_PROTO
+          value: ""
+        - name: KAFKA_SERVICE_HOST
+          value: ""
+        - name: KAFKA_SERVICE_PORT
+          value: ""
+        volumeMounts:
+        - name: data
+          mountPath: /kafka
+      volumes:
+      - name: data
+        emptyDir: {}

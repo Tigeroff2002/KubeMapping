@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logistic-trainer
+  namespace: logistic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logistic-trainer
+  template:
+    metadata:
+      labels:
+        app: logistic-trainer
+    spec:
+      containers:
+      - name: logistic-trainer
+        image: tigeroff/logistic-trainer:2.1
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: SKIP_EXTERNAL_CONNECTIONS
+          value: "False"  # Важно: в Kubernetes отключаем пропуск
+        - name: DB_HOST
+          value: "postgres"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: "logistic_db"
+        - name: DB_USER
+          value: "postgres"
+        - name: DB_PASSWORD
+          value: "root"
+        - name: MINIO_ENDPOINT
+          value: "minio-api:9000"
+        - name: MINIO_ACCESS_KEY
+          value: minioadmin
+        - name: MINIO_SECRET_KEY
+          value: minioadmin
+        - name: SERVICE_HOST
+          value: "minio-api"  # Или другой хост вашего ML сервиса
+        - name: SERVICE_PORT
+          value: "9000"
+        - name: SERVICE_TIMEOUT
+          value: "10"
+        - name: SERVICE_RETRIES
+          value: "3"
+
+        ports:
+        - containerPort: 8000
+          name: http
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "250m"

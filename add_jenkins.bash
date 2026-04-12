@@ -5,7 +5,7 @@ kubectl create secret generic docker-hub-credentials \
 
 kubectl create secret generic github-credentials \
   --from-literal=username=Tigeroff2002 \
-  --from-literal=password=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 \
+  --from-literal=password=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 \
   -n logistic \
 
 kubectl apply -f jenkins/serviceaccount.yaml

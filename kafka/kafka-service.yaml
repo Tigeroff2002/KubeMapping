@@ -3,13 +3,10 @@ kind: Service
 metadata:
   name: kafka
   namespace: logistic
-  labels:
-    app: kafka
 spec:
-  type: ClusterIP
-  ports:
-  - name: plaintext
-    port: 9092
-    targetPort: 9092
   selector:
     app: kafka
+  ports:
+  - port: 9092
+    targetPort: 9092
+  type: ClusterIP
