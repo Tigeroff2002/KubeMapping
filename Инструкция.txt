@@ -116,3 +116,15 @@ curl.exe -k https://logistic-web:43/
 kubectl port-forward deployment/postgres 5433:5432 -n logistic
 
 minikube service logistic-client --url -n logistic
+
+# Исправление работы Kafka
+kubectl delete deployment kafka -n logistic
+
+# Очистить данные ZooKeeper
+kubectl exec -it zookeeper-0 -n logistic -- bash -c "rm -rf /var/lib/zookeeper/data/version-2/*"
+
+# Перезапустить ZooKeeper
+kubectl delete pod zookeeper-0 -n logistic
+
+# Подождать, пока ZooKeeper запустится
+kubectl wait --for=condition=ready pod zookeeper-0 -n logistic --timeout=60s
